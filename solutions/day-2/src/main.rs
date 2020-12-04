@@ -5,7 +5,8 @@ const INPUT: &str = include_str!("../../../inputs/day-2.txt");
 
 fn main() -> anyhow::Result<()> {
     let mut buffer = [0; 4];
-    let mut valid_passwords = 0;
+    let mut part_one_valid_passwords = 0;
+    let mut part_two_valid_passwords = 0;
 
     for line in INPUT.lines() {
         let mut iter = line.splitn(4, |c| matches!(c, '-' | ' ' | ':'));
@@ -16,11 +17,18 @@ fn main() -> anyhow::Result<()> {
 
         let count = password.chars().filter(|c| c.encode_utf8(&mut buffer) == letter).count();
         if count >= left && count <= right {
-            valid_passwords += 1;
+            part_one_valid_passwords += 1;
+        }
+
+        let left_letter_match = password.chars().nth(left - 1).map_or(false, |c| c.encode_utf8(&mut buffer) == letter);
+        let right_letter_match = password.chars().nth(right - 1).map_or(false, |c| c.encode_utf8(&mut buffer) == letter);
+        if (left_letter_match as usize + right_letter_match as usize) == 1 {
+            part_two_valid_passwords += 1;
         }
     }
 
-    println!("answer is {}", valid_passwords);
+    println!("part one answer is {}", part_one_valid_passwords);
+    println!("part two answer is {}", part_two_valid_passwords);
 
     Ok(())
 }
