@@ -1,22 +1,24 @@
 const INPUT: &str = include_str!("../../../inputs/day-5.txt");
 
 fn main() -> anyhow::Result<()> {
-    let max_seat_id = INPUT.lines().map(|line| {
-        let (row, column) = split_seat_input(line);
-        let (row, column) = seat_row_column(row, column);
+    let mut seat_ids: Vec<_> = INPUT.lines().map(|line| {
+        let (row, column) = seat_row_column(line);
         row * 8 + column
-    }).max().unwrap();
+    }).collect();
 
-    println!("anwser is {}", max_seat_id);
+    seat_ids.sort_unstable();
+
+    let part_one_answer = seat_ids.last().unwrap();
+    println!("part one anwser is {}", part_one_answer);
+
+    let part_two_answer = seat_ids.windows(2).find(|ws| ws[0] + 1 != ws[1]).unwrap()[0] + 1;
+    println!("part two anwser is {}", part_two_answer);
 
     Ok(())
 }
 
-fn split_seat_input(input: &str) -> (&str, &str) {
-    (&input[0..7], &input[7..7+3])
-}
-
-fn seat_row_column(row: &str, column: &str) -> (u32, u32) {
+fn seat_row_column(input: &str) -> (u32, u32) {
+    let (row, column) = (&input[0..7], &input[7..7+3]);
     let row = binary_search(row.chars().map(Goto::from), 0, 127);
     let column = binary_search(column.chars().map(Goto::from), 0, 7);
     (row, column)
@@ -58,8 +60,7 @@ mod tests {
         let fourth = ("BBFFBBFRLL", 102, 4, 820);
 
         for (input, row, column, seat_id) in vec![first, second, third, fourth] {
-            let (r, c) = split_seat_input(input);
-            let (r, c) = seat_row_column(r, c);
+            let (r, c) = seat_row_column(input);
             let id = r * 8 + c;
 
             assert_eq!(r, row);
