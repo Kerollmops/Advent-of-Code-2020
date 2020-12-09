@@ -26,14 +26,15 @@ fn part_one_inner(numbers: &[i64], preamble: usize) -> i64 {
 fn part_two(input: &str, preamble: usize) -> i64 {
     let numbers = parse_numbers(input);
     let number = part_one_inner(&numbers, preamble);
-
     for start in 0..numbers.len() {
-        for len in 0..(numbers.len() - start) {
-            let slice = &numbers[start..start + len];
-            let acc: i64 = slice.iter().sum();
-            if acc == number {
-                let (min, max) = slice.iter().minmax().into_option().unwrap();
+        let mut count = 0;
+        for (i, x) in numbers[start..].iter().enumerate() {
+            count += x;
+            if count == number {
+                let (min, max) = numbers[start..start + i].iter().minmax().into_option().unwrap();
                 return min + max;
+            } else if count > number {
+                break
             }
         }
     }
